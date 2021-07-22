@@ -81,6 +81,10 @@ class MyAppState extends State<MyApp> {
     );
   }
 
+
+
+
+
   /*
   есть кэш на устройстве, есть данные на сервере
 
@@ -98,6 +102,9 @@ class MyAppState extends State<MyApp> {
   6.1 ....
 
    */
-
+  class MyApp  {
+  @override
+  MyAppState createState() => new MyAppState();
+  }
 
 }
