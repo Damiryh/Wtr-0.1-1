@@ -41,7 +41,7 @@ class MyAppState extends State<MyApp> {
   void _updateLocation() {
     _updateCurrent();
     LatLng center = new LatLng(_current.latitude, _current.longitude);
-    _controller.move(center, 14);
+    _controller.move(center, 14);//контроллер отображает на экране указанную точку, 14 - это зум
   }
 
   @override
