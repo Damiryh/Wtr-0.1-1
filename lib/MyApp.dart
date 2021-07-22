@@ -18,22 +18,16 @@ class MyApp extends StatefulWidget {
 class MyAppState extends State<MyApp> {
   MapController _controller = MapController();
   late Position _current;
-  double _zoom = 7;//масштаба
-  bool isLocationServiceEnabled = false;
-
-
 
   @override
   void initState() {
     super.initState();
     initPosition();
-    tryGeo();
   }
 
   void initPosition() async {
     _current = (await Geolocator.getLastKnownPosition())!;
     _updateLocation();
-    isLocationServiceEnabled  = await Geolocator.isLocationServiceEnabled();//метод показывающий включена ли служба определения геопозиции
   }
 
   Future<void> _updateCurrent() async {
@@ -47,37 +41,8 @@ class MyAppState extends State<MyApp> {
   void _updateLocation() {
     _updateCurrent();
     LatLng center = new LatLng(_current.latitude, _current.longitude);
-    _controller.move(center, _zoom);//_zoom позволит соблюдать масштаб при переопределении геопозиции
+    _controller.move(center, 14);//контроллер отображает на экране указанную точку, 14 - это зум
   }
-
-  void _zoomPlus() {
-    LatLng center = new LatLng(_current.latitude, _current.longitude);
-    _zoom += 0.5;
-    _controller.move(center, _zoom);
-  }
-
-  void _zoomMinus() {
-    LatLng center = new LatLng(_current.latitude, _current.longitude);
-    _zoom -= 0.5;
-    _controller.move(center, _zoom);
-  }
-
-  Widget tryGeo() {
-    if (isLocationServiceEnabled)
-      {
-       return Text("Yes",
-        textDirection: TextDirection.ltr,       // текст слева направо
-        textAlign: TextAlign.center,            // выравнивание по центру
-        style: TextStyle(color: Colors.green,   // зеленый цвет текста
-        fontSize: 26,                       // высота шрифта 26
-        backgroundColor: Colors.black87));
-      }     // черный цвет фона текста
-    else
-       return Text("No");
-
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -93,63 +58,53 @@ class MyAppState extends State<MyApp> {
           mapController: _controller,
           layers: [
             TileLayerOptions(
-              urlTemplate: URL_SPUTNIK_TEMPLATE,
-             //subdomains: ['a', 'b', 'c']
+              urlTemplate: URL_OSM_TEMPLATE,
+              subdomains: ['a', 'b', 'c']
             )
           ],
         ),
         Align(
           child: Padding(
               padding: EdgeInsets.all(25),
-              child : /*FloatingActionButton(
+              child : FloatingActionButton(
                 child: Icon(
                   Icons.gps_fixed_sharp,
                   color: Colors.white,
                   semanticLabel: 'Update a GPS location',
                 ),
                 onPressed: _updateLocation,
-              )*/
-              Column(children:[
-                FloatingActionButton(
-                child: Icon(
-                  Icons.gps_fixed_sharp,
-                  color: Colors.white,
-                  semanticLabel: 'Update a GPS location',
-                ),
-                onPressed: _updateLocation,),
-
-                FloatingActionButton(
-                  child: Icon(
-                    Icons.add,
-                    color: Colors.greenAccent,
-                    semanticLabel: 'Zoom plus',
-                  ),
-                  onPressed: _zoomPlus,),
-
-                FloatingActionButton(
-                  child: Icon(
-                    Icons.horizontal_rule,
-                    color: Colors.white,
-                    semanticLabel: 'Zoom minus',
-                  ),
-                  onPressed: _zoomMinus,),
-              ]
               )
-
-
-
           ),
           alignment: Alignment.bottomRight,
-        ),
-
-
-        Align(
-            child: tryGeo(),
-          alignment:Alignment.center ,
         )
-
-
       ],
     );
   }
+
+
+
+
+
+  /*
+  есть кэш на устройстве, есть данные на сервере
+
+  -1. создать класс "область": геолокация, [точки поилки]
+
+  0. если кэш не пуст, то вычислить расстояние между текущей геолокацией и всеми хранящимися в кеше. если пуст, то шаг 3
+  1. если расстояние не превышает, то не грузить
+  2. если расстояния превышает, то грузить с сервера
+  3. отправить по апи геолокацию на сервер, получить массив точек
+  4. создать экземпляр класса Область, добавить в него геолокацию, полученный массив точек
+  5. сохранить в кэш
+
+  нахождение ближайших 4х в области .......(цикл - расширять пока не найдутся 4 точки)
+  6. проверка входят ли точки в окружность:
+  6.1 ....
+
+   */
+  class MyApp  {
+  @override
+  MyAppState createState() => new MyAppState();
+  }
+
 }
